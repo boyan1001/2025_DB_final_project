@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import data from './data/restaurant_data.json';
 import { Link } from "react-router-dom";
 import nullImage from './data/null_image.png';
 
@@ -38,7 +37,6 @@ function getVisiblePageNumbers(currentPage, totalPages, windowSize = 2) {
   return [1, ...pages, totalPages];
 }
 
-
 export default function RestaurantSearch() {
   const [restaurants, setRestaurants] = useState([]);
   const [query, setQuery] = useState("");
@@ -50,19 +48,29 @@ export default function RestaurantSearch() {
   const user = getLoggedInUser();
 
   useEffect(() => {
-    setRestaurants(data);
-    setCurrentPage(1); // reset to first page when filters change
+    async function fetchData() {
+      const params = new URLSearchParams();
+      if (query) params.append("q", query);
+      if (cuisine) params.append("cuisine", cuisine);
+      if (district) params.append("district", district);
+
+      try {
+        const res = await fetch(`/api/restaurants?${params.toString()}`);
+        const json = await res.json();
+        console.log("取得的資料", json);
+        setRestaurants(json);
+        setCurrentPage(1);
+      } catch (err) {
+        console.error("載入餐廳資料失敗", err);
+      }
+    }
+
+    fetchData();
   }, [query, cuisine, district]);
 
-  const filtered = restaurants.filter((rest) =>
-    rest.name.includes(query) &&
-    (cuisine === "" || rest.cuisine_type.includes(cuisine)) &&
-    (district === "" || rest.district?.district === district)
-  );
-
-  const totalPages = Math.ceil(filtered.length / itemsPerPage);
+  const totalPages = Math.ceil(restaurants.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
-  const paginated = filtered.slice(startIndex, startIndex + itemsPerPage);
+  const paginated = restaurants.slice(startIndex, startIndex + itemsPerPage);
 
   return (
     <div className="container">
@@ -125,26 +133,27 @@ export default function RestaurantSearch() {
                 src={rest.image || nullImage}
                 alt={rest.name}
                 loading="lazy"
+                onError={(e) => {
+                  e.target.onerror = null;
+                  e.target.src = nullImage;
+                }}
               />
-              <div className="card-content">  
+              <div className="card-content">
                 <h2>{rest.name}</h2>
-                <p>{rest.cuisine_type.join("、")} · {rest.district?.district || "未知地區"}</p>
+                <p>{Array.isArray(rest.cuisine_type) ? rest.cuisine_type.join("、") : rest.cuisine_type} · {rest.district || "未知地區"}</p>
                 <p>地址：{rest.address}</p>
                 <p>評分：⭐ {rest.rating}</p>
               </div>
-              {/* ❤️ 收藏按鈕加這裡 */}
               <button
                 className="favorite-btn"
                 onClick={(e) => {
-                  e.preventDefault(); // 避免觸發 Link
-
+                  e.preventDefault();
                   if (!user) {
                     alert("請先登入才能收藏餐廳！");
                     return;
                   }
-
                   toggleFavorite(user, rest.restaurant_id);
-                  setRestaurants([...restaurants]); // 強制 re-render
+                  setRestaurants([...restaurants]);
                 }}
               >
                 {user && isFavorite(user, rest.restaurant_id) ? "💖" : "🤍"}
@@ -153,93 +162,69 @@ export default function RestaurantSearch() {
           </Link>
         ))}
       </div>
-      {/* 分頁按鈕 */}
+
       {totalPages > 1 && (
-      <div className="pagination">
-        <button onClick={() => setCurrentPage(1)} disabled={currentPage === 1}>
-          « First
-        </button>
+        <div className="pagination">
+          <button onClick={() => setCurrentPage(1)} disabled={currentPage === 1}>« First</button>
+          <button onClick={() => setCurrentPage(p => Math.max(1, p - 1))} disabled={currentPage === 1}>&lt; Prev</button>
+          {getVisiblePageNumbers(currentPage, totalPages).map((p, idx) =>
+            p === "..." ? (
+              <span key={`ellipsis-${idx}`} style={{ margin: "0 6px" }}>...</span>
+            ) : (
+              <button key={p} onClick={() => setCurrentPage(p)} className={currentPage === p ? "active-page" : ""}>{p}</button>
+            )
+          )}
+          <button onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} disabled={currentPage === totalPages}>Next &gt;</button>
+          <button onClick={() => setCurrentPage(totalPages)} disabled={currentPage === totalPages}>Last »</button>
+        </div>
+      )}
 
-        <button onClick={() => setCurrentPage(p => Math.max(1, p - 1))} disabled={currentPage === 1}>
-          &lt; Prev
-        </button>
-
-        {getVisiblePageNumbers(currentPage, totalPages).map((p, idx) =>
-          p === "..." ? (
-            <span key={`ellipsis-${idx}`} style={{ margin: "0 6px" }}>...</span>
-          ) : (
-            <button
-              key={p}
-              onClick={() => setCurrentPage(p)}
-              className={currentPage === p ? "active-page" : ""}
-            >
-              {p}
-            </button>
-          )
-        )}
-
-        <button onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} disabled={currentPage === totalPages}>
-          Next &gt;
-        </button>
-
-        <button onClick={() => setCurrentPage(totalPages)} disabled={currentPage === totalPages}>
-          Last »
-        </button>
+      <div className="pagination-controls">
+        <label>
+          每頁顯示：
+          <select value={itemsPerPage} onChange={(e) => {
+            setItemsPerPage(Number(e.target.value));
+            setCurrentPage(1);
+          }}>
+            <option value={6}>6 筆</option>
+            <option value={12}>12 筆</option>
+            <option value={24}>24 筆</option>
+            <option value={restaurants.length}>全部</option>
+          </select>
+        </label>
       </div>
-    )}
-  <div className="pagination-controls">
-    <label>
-      每頁顯示：
-      <select
-        value={itemsPerPage}
-        onChange={(e) => {
-          setItemsPerPage(Number(e.target.value));
-          setCurrentPage(1);
-        }}
-      >
-        <option value={6}>6 筆</option>
-        <option value={12}>12 筆</option>
-        <option value={24}>24 筆</option>
-        <option value={filtered.length}>全部</option>
-      </select>
-    </label>
-  </div>
-  <div className="pagination-controls">
-    <label>
-      跳至第
-      <input
-        type="number"
-        min="1"
-        max={totalPages}
-        value={jumpPageInput}
-        onChange={(e) => setJumpPageInput(e.target.value)}
-        onKeyDown={(e) => {
-          if (e.key === "Enter") {
-            const targetPage = parseInt(jumpPageInput, 10);
-            if (!isNaN(targetPage) && targetPage >= 1 && targetPage <= totalPages) {
-              setCurrentPage(targetPage);
-            } else {
-              alert("請輸入有效的頁數！");
-            }
+
+      <div className="pagination-controls">
+        <label>
+          跳至第
+          <input
+            type="number"
+            min="1"
+            max={totalPages}
+            value={jumpPageInput}
+            onChange={(e) => setJumpPageInput(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                const page = parseInt(jumpPageInput, 10);
+                if (!isNaN(page) && page >= 1 && page <= totalPages) {
+                  setCurrentPage(page);
+                } else {
+                  alert("請輸入有效的頁數！");
+                }
+              }
+            }}
+          />
+          頁
+        </label>
+        <button onClick={() => {
+          const page = parseInt(jumpPageInput, 10);
+          if (!isNaN(page) && page >= 1 && page <= totalPages) {
+            setCurrentPage(page);
+          } else {
+            alert("請輸入有效的頁數！");
           }
-        }}
-      />
-      頁
-    </label>
-    <button
-      onClick={() => {
-        const targetPage = parseInt(jumpPageInput, 10);
-        if (!isNaN(targetPage) && targetPage >= 1 && targetPage <= totalPages) {
-          setCurrentPage(targetPage);
-        } else {
-          alert("請輸入有效的頁數！");
-        }
-      }}
-    >
-      Go
-    </button>
-</div>
+        }}>Go</button>
+      </div>
     </div>
-    
   );
 }
