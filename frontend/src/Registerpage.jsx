@@ -8,20 +8,35 @@ export default function RegisterPage() {
   const [userType, setUserType] = useState("user"); // "user" or "merchant"
   const [storeName, setStoreName] = useState(""); // 店家專用
 
-  const handleRegister = (e) => {
+  const handleRegister = async (e) => {
     e.preventDefault();
 
-    const account = {
+    const payload = {
       username,
       password,
-      type: userType,
-      ...(userType === "owner" && { storeName }),
+      role: userType === "merchant" ? "merchant" : "user",
     };
 
-    // 儲存到 localStorage
-    localStorage.setItem(`user_${username}`, JSON.stringify(account));
-    alert("註冊成功！");
-    navigate("/login");
+    try {
+      const res = await fetch("/api/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+
+      const result = await res.json();
+
+      if (res.ok) {
+        alert("✅ 註冊成功！");
+        navigate("/login");
+      } else {
+        alert(`❌ 註冊失敗：${result.error}`);
+      }
+    } catch (err) {
+      alert("❌ 發生錯誤：" + err.message);
+    }
   };
 
   return (
@@ -56,7 +71,6 @@ export default function RegisterPage() {
               placeholder="餐廳名稱"
               value={storeName}
               onChange={(e) => setStoreName(e.target.value)}
-              required
             />
           )}
 
