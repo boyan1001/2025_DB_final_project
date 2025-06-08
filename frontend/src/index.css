@@ -323,6 +323,68 @@ body {
   color: #5C4526;
 }
 
+.review-form {
+  max-width: 860px; /* ✅ 比原本更寬 */
+  margin: 2rem auto;
+  padding: 1.2rem 2rem; /* ✅ 上下 padding 少一點，讓它比較扁 */
+  background-color: #fffbe6;
+  border: 1px solid #f3e5ab;
+  border-radius: 16px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+  font-size: 1.05rem;
+}
+
+.review-form h2 {
+  margin-bottom: 1rem;
+  font-weight: bold;
+  color: #5c4526;
+}
+
+.review-form label {
+  display: block;
+  margin: 1rem 0 0.5rem;
+  font-weight: bold;
+  color: #444;
+}
+
+.review-form select {
+  padding: 0.5rem 0.75rem;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: white;
+}
+
+.review-form textarea {
+  width: 100%;
+  resize: none; /* 禁止調整大小 */
+  height: 150px;
+  font-size: 1rem;
+  padding: 0.8rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: #fff;
+  box-sizing: border-box;
+  line-height: 1.5;
+}
+
+.review-form button {
+  margin-top: 1.5rem;
+  padding: 0.6rem 1.2rem;
+  font-size: 1rem;
+  background-color: #facc15;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  color: #333;
+  transition: background-color 0.3s ease;
+}
+
+.review-form button:hover {
+  background-color: #f5b938;
+}
+
 @media (max-width: 768px) {
   .card {
     width: 100%;
@@ -334,5 +396,9 @@ body {
     flex-direction: column;
     align-items: flex-start;
     gap: 1rem;
+  }
+  .review-form {
+    padding: 1.5rem 1rem;
+    margin: 1rem;
   }
 }

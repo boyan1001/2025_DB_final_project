@@ -8,11 +8,17 @@ review_bp = Blueprint("review", __name__, url_prefix="/api/reviews")
 def get_reviews(restaurant_id):
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
-    cursor.execute("SELECT * FROM Reviews WHERE restaurant_id = %s", (restaurant_id,))
+    cursor.execute("""
+        SELECT Reviews.*, User.username
+        FROM Reviews
+        JOIN User ON Reviews.user_id = User.user_id
+        WHERE Reviews.restaurant_id = %s
+    """, (restaurant_id,))
     reviews = cursor.fetchall()
     cursor.close()
     conn.close()
     return jsonify(reviews)
+
 
 # 新增一則評論
 @review_bp.route("", methods=["POST"])
