@@ -8,11 +8,13 @@ import "swiper/css/effect-coverflow";
 import nullImage from "./data/null_image.png";
 
 function getPriceRangeString(priceRange) {
-  if (!priceRange) return "價格資訊不詳";
-  if (priceRange === "$") return "低價";
-  if (priceRange === "$$") return "中價";
-  if (priceRange === "$$$") return "高價";
-  return "價格資訊不詳";
+  if (!priceRange || isNaN(priceRange)) return "價格資訊不詳";
+
+  const price = parseInt(priceRange, 10);
+  const lower = Math.floor((price - 1) / 200) * 200 + 1;
+  const upper = lower + 199;
+
+  return `${lower}–${upper}`;
 }
 
 export default function RestaurantDetail() {
@@ -20,43 +22,96 @@ export default function RestaurantDetail() {
   const [restaurant, setRestaurant] = useState(null);
   const [photos, setPhotos] = useState([]);
   const [reviews, setReviews] = useState([]);
+  const [newRating, setNewRating] = useState(5);
+  const [newComment, setNewComment] = useState("");
+
+  const loggedInUser = Number(localStorage.getItem("loggedInUser")); // user_id
+  const loggedInUsername = localStorage.getItem("loggedInUsername");
 
   useEffect(() => {
     async function fetchRestaurant() {
-      try {
-        const res = await fetch(`/api/restaurants/${id}`);
-        const json = await res.json();
-        setRestaurant(json);
-      } catch (err) {
-        console.error("載入餐廳資料失敗", err);
-      }
+      const res = await fetch(`/api/restaurants/${id}`);
+      const json = await res.json();
+      setRestaurant(json);
     }
 
     async function fetchPhotos() {
-      try {
-        const res = await fetch(`/api/images/${id}`);
-        const json = await res.json();
-        const urls = json.map((img) => img.image_url);
-        setPhotos(urls);
-      } catch (err) {
-        console.error("載入圖片失敗", err);
-      }
+      const res = await fetch(`/api/images/${id}`);
+      const json = await res.json();
+      setPhotos(json.map((img) => img.image_url));
     }
 
     async function fetchReviews() {
-      try {
-        const res = await fetch(`/api/reviews/${id}`);
-        const json = await res.json();
-        setReviews(json);
-      } catch (err) {
-        console.error("載入評論失敗", err);
+      const res = await fetch(`/api/reviews/${id}`);
+      const json = await res.json();
+      setReviews(json);
+
+      const existing = json.find((r) => r.user_id === loggedInUser);
+      if (existing) {
+        setNewRating(existing.rating);
+        setNewComment(existing.comment);
       }
     }
 
     fetchRestaurant();
     fetchPhotos();
     fetchReviews();
-  }, [id]);
+  }, [id, loggedInUser]);
+
+  useEffect(() => {
+    const existing = reviews.find((r) => r.user_id === loggedInUser);
+    if (existing) {
+      setNewRating(existing.rating);
+      setNewComment(existing.comment);
+    }
+  }, [reviews, loggedInUser]);
+
+  async function handleSubmitReview() {
+    if (!newComment.trim()) {
+      alert("請填寫評論內容");
+      return;
+    }
+
+    const existing = reviews.find((r) => r.user_id === loggedInUser);
+
+    const payload = {
+      user_id: loggedInUser,
+      restaurant_id: id,
+      rating: newRating,
+      comment: newComment,
+      review_date: new Date().toISOString().split("T")[0],
+    };
+
+    const method = existing ? "PUT" : "POST";
+    const url = existing
+      ? `/api/reviews/${existing.review_id}`
+      : `/api/reviews`;
+
+    try {
+      const res = await fetch(url, {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      const contentType = res.headers.get("content-type");
+      if (!contentType || !contentType.includes("application/json")) {
+        throw new Error("後端未回傳 JSON，可能是路徑錯誤或伺服器錯誤");
+      }
+
+      const result = await res.json();
+      if (res.ok) {
+        alert(existing ? "✅ 評論已更新" : "✅ 已新增評論");
+        setNewComment("");
+        const newRes = await fetch(`/api/reviews/${id}`);
+        setReviews(await newRes.json());
+      } else {
+        alert(`❌ 操作失敗：${result.error}`);
+      }
+    } catch (err) {
+      alert("❌ 發生錯誤：" + err.message);
+    }
+  }
 
   if (!restaurant) return <p>載入中...</p>;
 
@@ -84,22 +139,17 @@ export default function RestaurantDetail() {
           style={{ paddingBottom: "3rem" }}
         >
           {photos.map((photoUrl, idx) => (
-            <SwiperSlide
-              key={idx}
-              style={{
-                width: "600px",
-                height: "400px",
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
+            <SwiperSlide key={idx} style={{
+              width: "600px",
+              height: "400px",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center"
+            }}>
               <img
                 src={photoUrl}
                 alt={`餐廳圖片 ${idx + 1}`}
-                onError={(e) => {
-                  e.target.src = nullImage;
-                }}
+                onError={(e) => { e.target.src = nullImage }}
                 style={{
                   width: "100%",
                   height: "100%",
@@ -121,28 +171,46 @@ export default function RestaurantDetail() {
         <h3><strong>評分：</strong>⭐ {restaurant.rating}</h3>
       </div>
 
-      <hr style={{ margin: "2rem 0" }} />
-
       <h2>評論區</h2>
       {reviews.length > 0 ? (
         <div style={{ textAlign: "left", maxWidth: "600px", margin: "0 auto" }}>
           {reviews.map((review, index) => (
             <div key={index} style={{ marginBottom: "1.5rem", borderBottom: "1px solid #ccc", paddingBottom: "1rem" }}>
-              <p><strong>{review.user_id}</strong>（{review.review_date}）</p>
+              <p><strong>{review.username}</strong>（{review.review_date}）</p>
               <p>評分：⭐ {review.rating}</p>
-              <p>
-                {review.comment.split("\n").map((line, i) => (
-                  <span key={i}>
-                    {line}
-                    <br />
-                  </span>
-                ))}
-              </p>
+              <p>{review.comment.split("\n").map((line, i) => (
+                <span key={i}>{line}<br /></span>
+              ))}</p>
             </div>
           ))}
         </div>
+      ) : <p style={{ textAlign: "center" }}>尚無評論</p>}
+
+      <hr style={{ margin: "2rem 0" }} />
+
+      {loggedInUser ? (
+        <div className="review-form">
+          <h2>{reviews.find(r => r.user_id === loggedInUser) ? "修改評論" : "撰寫評論"}</h2>
+
+          <label>評分：</label>
+          <select value={newRating} onChange={(e) => setNewRating(e.target.value)}>
+            {[5, 4, 3, 2, 1].map((num) => (
+              <option key={num} value={num}>⭐ {num}</option>
+            ))}
+          </select>
+
+          <label>評論內容：</label>
+          <textarea
+            value={newComment}
+            onChange={(e) => setNewComment(e.target.value)}
+          />
+
+          <button onClick={handleSubmitReview}>送出評論</button>
+        </div>
       ) : (
-        <p>尚無評論</p>
+        <p style={{ textAlign: "center", color: "gray", marginTop: "2rem" }}>
+          請先登入才能撰寫評論
+        </p>
       )}
     </div>
   );

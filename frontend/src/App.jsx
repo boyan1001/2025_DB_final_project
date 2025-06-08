@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Link, useNavigate } from "react
 import { useState, useEffect } from "react";
 import RestaurantSearch from "./RestaurantSearch";
 import RestaurantDetail from "./RestaurantDetail";
-import LoginPage from "./LoginPage";
+import LoginPage from "./loginpage";
 import RegisterPage from "./Registerpage";
 import FavoritePage from "./FavoritePage";
 import Footer from "./Footer";
@@ -14,7 +14,7 @@ export default function App() {
 
   // 頁面載入時讀取 localStorage
   useEffect(() => {
-    const storedUser = localStorage.getItem("loggedInUser");
+    const storedUser = localStorage.getItem("loggedInUsername");
     if (storedUser) {
       setUser(storedUser);
     }
