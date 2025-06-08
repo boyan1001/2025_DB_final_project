@@ -86,3 +86,12 @@ def get_restaurants():
 
     results = query_all(sql, values)
     return jsonify(results)
+
+# 🔍 查詢單一店家
+@restaurant_bp.route("/<restaurant_id>", methods=["GET"])
+def get_restaurant(restaurant_id):
+    sql = "SELECT * FROM Restaurant WHERE restaurant_id = %s"
+    result = query_all(sql, (restaurant_id,))
+    if not result:
+        return jsonify({"message": "找不到該店家"}), 404
+    return jsonify(result[0])
