@@ -26,7 +26,6 @@ export default function RestaurantDetail() {
   const [newComment, setNewComment] = useState("");
 
   const loggedInUser = Number(localStorage.getItem("loggedInUser")); // user_id
-  const loggedInUsername = localStorage.getItem("loggedInUsername");
 
   useEffect(() => {
     async function fetchRestaurant() {

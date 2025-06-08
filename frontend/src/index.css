@@ -273,15 +273,15 @@ body {
 }
 
 .pagination-controls button {
-  padding: 0.4rem 0.8rem;
-  margin-left: 0.5rem;
-  background-color: #facc15;
-  color: white;
+  background-color: #ffeaa7; /* 鵝黃色 */
   border: none;
-  border-radius: 6px;
-  cursor: pointer;
+  color: #2d3436;
   font-weight: bold;
-  transition: background-color 0.2s ease;
+  padding: 8px 16px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .pagination-controls button:hover {
@@ -383,6 +383,22 @@ body {
 
 .review-form button:hover {
   background-color: #f5b938;
+}
+
+.query-button {
+  background-color: #ffeaa7; /* 鵝黃色 */
+  border: none;
+  color: #2d3436;
+  font-weight: bold;
+  padding: 8px 16px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.query-button:hover {
+  background-color: #facc15;
 }
 
 @media (max-width: 768px) {
