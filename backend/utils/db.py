@@ -8,3 +8,11 @@ def query_all(sql, params=None):
     cursor.close()
     conn.close()
     return rows
+
+def execute(sql, params=None):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute(sql, params or [])
+    conn.commit()
+    cursor.close()
+    conn.close()

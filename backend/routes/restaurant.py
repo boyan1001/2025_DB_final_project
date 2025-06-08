@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from utils.db import query_all, query_one, execute
+from utils.db import query_all, execute
 
 restaurant_bp = Blueprint("restaurant", __name__, url_prefix="/api/restaurants")
 
