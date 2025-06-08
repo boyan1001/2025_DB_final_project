@@ -130,7 +130,7 @@ export default function RestaurantSearch() {
           >
             <div className="card">
               <img
-                src={rest.image || nullImage}
+                src={rest.cover || nullImage}
                 alt={rest.name}
                 loading="lazy"
                 onError={(e) => {
