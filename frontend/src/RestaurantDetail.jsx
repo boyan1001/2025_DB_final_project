@@ -97,6 +97,7 @@ export default function RestaurantDetail() {
       ) : (
         <p>尚無評論</p>
       )}
+      
     </div>
   );
 }
