@@ -107,6 +107,36 @@ export default function OwnerDashboard() {
     }
   };
 
+  const handleDeleteRestaurant = async (id) => {
+    const confirmDelete = window.confirm("確定要刪除這間餐廳嗎？此動作無法復原！");
+    if (!confirmDelete) return;
+
+    try {
+      const res = await fetch(`/api/restaurants/${id}`, {
+        method: "DELETE",
+      });
+
+      const result = await res.json();
+
+      if (!res.ok) {
+        console.error("刪除失敗:", result);
+        alert("❌ 刪除失敗：" + (result.error || "未知錯誤"));
+        return;
+      }
+
+      alert("✅ 餐廳已成功刪除");
+
+      // 重新更新餐廳清單
+      const refreshed = await fetch(`/api/restaurants?owner_id=${ownerId}`);
+      const updated = await refreshed.json();
+      setRestaurants(updated);
+      setSelected(null);
+    } catch (err) {
+      console.error("錯誤發生:", err);
+      alert("❌ 無法刪除，請稍後再試");
+    }
+  };
+
   const startNewRestaurant = () => {
     setSelected({
       name: "",
