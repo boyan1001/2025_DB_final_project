@@ -107,28 +107,6 @@ export default function OwnerDashboard() {
     }
   };
 
-  const handleDeleteRestaurant = async (id) => {
-    const confirmDelete = window.confirm("確定要刪除這間餐廳嗎？此動作無法復原！");
-    if (!confirmDelete) return;
-
-    const res = await fetch(`/api/restaurants/${id}`, {
-      method: "DELETE",
-    });
-
-    const result = await res.json();
-
-    if (res.ok) {
-      alert("✅ 餐廳已刪除");
-      // 重新抓取餐廳清單
-      const refreshed = await fetch(`/api/restaurants?owner_id=${ownerId}`);
-      const updated = await refreshed.json();
-      setRestaurants(updated);
-      setSelected(null);
-    } else {
-      alert("❌ 刪除失敗：" + result.error);
-    }
-  };
-
   const startNewRestaurant = () => {
     setSelected({
       name: "",
@@ -434,7 +412,9 @@ export default function OwnerDashboard() {
               <option value="十四張">十四張</option>
             </optgroup>
           </select>
-
+          <button onClick={saveChanges}>
+            {selected?.restaurant_id ? "儲存變更" : "新增餐廳"}
+          </button>
           {selected.restaurant_id && (
             <>
               <h4 style={{ marginTop: "2rem" }}>圖片集</h4>
