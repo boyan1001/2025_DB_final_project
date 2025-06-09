@@ -47,6 +47,8 @@ export default function RestaurantSearch() {
   const [jumpPageInput, setJumpPageInput] = useState("");
   const [station, setStation] = useState("");
   const user = getLoggedInUser();
+  const [favorites, setFavorites] = useState([]);
+  const userId = Number(localStorage.getItem("loggedInUser"));
 
   async function fetchData() {
       const params = new URLSearchParams();
@@ -69,6 +71,45 @@ export default function RestaurantSearch() {
   useEffect(() => {
     fetchData();
   }, []);
+
+  useEffect(() => {
+    async function fetchFavorites() {
+      if (!userId) return;
+      try {
+        const res = await fetch(`/api/favorites/${userId}`);
+        if (!res.ok) throw new Error("無法取得收藏清單");
+        const data = await res.json();
+        setFavorites(data.map(r => r.restaurant_id)); // 只保留 ID
+      } catch (err) {
+        console.error("載入收藏失敗：", err);
+      }
+    }
+
+    fetchFavorites();
+  }, [userId]);
+
+  async function handleToggleFavorite(userId, restaurantId) {
+    const isFav = favorites.includes(restaurantId);
+    try {
+      const res = await fetch("/api/favorites", {
+        method: isFav ? "DELETE" : "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ user_id: Number(userId), restaurant_id: restaurantId }),
+      });
+
+      if (!res.ok) throw new Error("收藏操作失敗");
+
+      // 更新狀態（不使用 localStorage）
+      const newFavs = isFav
+        ? favorites.filter(id => id !== restaurantId)
+        : [...favorites, restaurantId];
+      setFavorites(newFavs);
+    } catch (err) {
+      alert("❌ 無法更新收藏：" + err.message);
+    }
+  }
+
+
 
   const totalPages = Math.ceil(restaurants.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
@@ -325,11 +366,10 @@ export default function RestaurantSearch() {
                     alert("請先登入才能收藏餐廳！");
                     return;
                   }
-                  toggleFavorite(user, rest.restaurant_id);
-                  setRestaurants([...restaurants]);
+                  handleToggleFavorite(user, rest.restaurant_id); // 改用新函數
                 }}
               >
-                {user && isFavorite(user, rest.restaurant_id) ? "💖" : "🤍"}
+                {user && favorites.includes(rest.restaurant_id) ? "💖" : "🤍"}
               </button>
             </div>
           </Link>

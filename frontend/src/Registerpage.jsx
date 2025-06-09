@@ -10,9 +10,10 @@ export default function RegisterPage() {
     storeName: "",
     address: "",
     phone: "",
-    priceRange: "1",
+    priceRange: "",
     cuisineTypes: [],
     image: "",
+    district: "", // 預設值
   });
 
   const handleChange = (e) => {
@@ -33,40 +34,40 @@ export default function RegisterPage() {
     e.preventDefault();
 
     try {
+      // 驗證餐廳欄位
+      if (form.userType === "owner") {
+        if (!form.storeName || !form.address || !form.phone) {
+          alert("❌ 餐廳資訊不完整！");
+          return;
+        }
+      }
+
       // 註冊帳號
       const res = await fetch("/api/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
+          body: JSON.stringify({
           username: form.username,
           password: form.password,
           role: form.userType === "owner" ? "owner" : "user",
+          ...(form.userType === "owner" && {
+            restaurant: {
+              name: form.storeName,
+              address: form.address,
+              phone: form.phone,
+              price_range: form.priceRange,
+              cuisine_type: form.cuisineTypes.join("、"),
+              cover: form.image,
+              county: "",
+              district: form.district,
+              station_name: ""
+            }
+          })
         }),
       });
 
       const result = await res.json();
       if (!res.ok) return alert(`❌ 註冊失敗：${result.error}`);
-
-      // 如果是店家，再新增餐廳
-      if (form.userType === "owner") {
-        const restaurantPayload = {
-          name: form.storeName,
-          address: form.address,
-          phone: form.phone,
-          price_range: parseInt(form.priceRange, 10),
-          cuisine_type: form.cuisineTypes.join(", "), // 假設後端是 VARCHAR 存字串
-          cover: form.image,
-        };
-
-        const r2 = await fetch("/api/restaurants", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(restaurantPayload),
-        });
-
-        const result2 = await r2.json();
-        if (!r2.ok) return alert(`❌ 餐廳建立失敗：${result2.error}`);
-      }
 
       alert("✅ 註冊成功！");
       navigate("/login");
@@ -134,11 +135,56 @@ export default function RegisterPage() {
               />
               <label>價格範圍：</label>
               <select name="priceRange" value={form.priceRange} onChange={handleChange}>
-                <option value="1">1–200$</option>
-                <option value="2">201–400$</option>
-                <option value="3">401–600$</option>
-                <option value="4">601–800$</option>
-                <option value="5">801$ 以上</option>
+                <option value="$">$0 - $200</option>
+                <option value="$$">$201 - $400</option>
+                <option value="$$$">$401 - $600</option>
+                <option value="$$$$">$601 - $800</option>
+                <option value="$$$$$">$801 以上</option>
+              </select>
+
+              <label>地區：</label>
+              <select name="district" value={form.district} onChange={handleChange}>
+                <option value="中正區">中正區</option>
+                <option value="大同區">大同區</option>
+                <option value="中山區">中山區</option>
+                <option value="松山區">松山區</option>
+                <option value="大安區">大安區</option>
+                <option value="萬華區">萬華區</option>
+                <option value="信義區">信義區</option>
+                <option value="士林區">士林區</option>
+                <option value="北投區">北投區</option>
+                <option value="內湖區">內湖區</option>
+                <option value="南港區">南港區</option>
+                <option value="文山區">文山區</option>
+                <option value="板橋區">板橋區</option>
+                <option value="新莊區">新莊區</option>
+                <option value="中和區">中和區</option>
+                <option value="永和區">永和區</option>
+                <option value="三重區">三重區</option>
+                <option value="蘆洲區">蘆洲區</option>
+                <option value="土城區">土城區</option>
+                <option value="樹林區">樹林區</option>
+                <option value="鶯歌區">鶯歌區</option>
+                <option value="三峽區">三峽區</option>
+                <option value="淡水區">淡水區</option>
+                <option value="八里區">八里區</option>
+                <option value="林口區">林口區</option>
+                <option value="五股區">五股區</option>
+                <option value="泰山區">泰山區</option>
+                <option value="新店區">新店區</option>
+                <option value="深坑區">深坑區</option>
+                <option value="石碇區">石碇區</option>
+                <option value="坪林區">坪林區</option>
+                <option value="烏來區">烏來區</option>
+                <option value="三芝區">三芝區</option>
+                <option value="石門區">石門區</option>
+                <option value="金山區">金山區</option>
+                <option value="萬里區">萬里區</option>
+                <option value="瑞芳區">瑞芳區</option>
+                <option value="貢寮區">貢寮區</option>
+                <option value="平溪區">平溪區</option>
+                <option value="雙溪區">雙溪區</option>
+                <option value="汐止區">汐止區</option>
               </select>
 
               <label>餐廳類型（可複選）：</label>

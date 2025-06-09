@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 
-export default function LoginPage({ setUser }) {
+export default function LoginPage({ setUser, setRole }) {
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
@@ -21,8 +21,11 @@ export default function LoginPage({ setUser }) {
 
       if (res.ok) {
         alert("✅ 登入成功！");
-        setUser(result.user.username); // 將登入使用者設為全域
-        localStorage.setItem("loggedInUser", result.user.username); // 可視需要儲存
+        setUser(result.user.username);
+        setRole(result.user.role); // <--- 新增這行
+        localStorage.setItem("loggedInUser", result.user.user_id);
+        localStorage.setItem("loggedInUsername", result.user.username);
+        localStorage.setItem("loggedInRole", result.user.role);
         navigate("/");
       } else {
         alert(`❌ 登入失敗：${result.error}`);

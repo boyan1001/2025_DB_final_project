@@ -401,6 +401,90 @@ body {
   background-color: #facc15;
 }
 
+.owner-section {
+  padding: 2rem;
+  background-color: #fffdf2;
+  margin-top: 4rem;
+  border-radius: 12px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.05);
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.owner-section h2 {
+  font-size: 1.8rem;
+  margin-bottom: 1.5rem;
+  color: #5c4526;
+  text-align: center;
+}
+
+.restaurant-item {
+  border-bottom: 1px solid #e0c98d;
+  padding: 1rem 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.restaurant-item button {
+  background-color: #ffe58f;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.restaurant-item button:hover {
+  background-color: #facc15;
+}
+
+.edit-form {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background-color: #fffef6;
+  border: 1px solid #f3e5ab;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.edit-form input,
+.edit-form select {
+  display: block;
+  margin-bottom: 1rem;
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 1rem;
+  box-sizing: border-box;
+}
+
+.edit-form label {
+  font-weight: bold;
+  margin-top: 1rem;
+  display: block;
+  color: #333;
+}
+
+.edit-form button {
+  margin-top: 1rem;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  background-color: #facc15;
+  color: #333;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+
+.edit-form button:hover {
+  background-color: #f5b938;
+}
+
 @media (max-width: 768px) {
   .card {
     width: 100%;
