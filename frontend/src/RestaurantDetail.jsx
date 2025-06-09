@@ -38,19 +38,19 @@ export default function RestaurantDetail() {
 
   useEffect(() => {
     async function fetchRestaurant() {
-      const res = await fetch(`/api/restaurants/${id}`);
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/restaurants/${id}`);
       const json = await res.json();
       setRestaurant(json);
     }
 
     async function fetchPhotos() {
-      const res = await fetch(`/api/images/${id}`);
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/images/${id}`);
       const json = await res.json();
       setPhotos(json.map((img) => img.image_url));
     }
 
     async function fetchReviews() {
-      const res = await fetch(`/api/reviews/${id}`);
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/reviews/${id}`);
       const json = await res.json();
       setReviews(json);
 
@@ -92,8 +92,8 @@ export default function RestaurantDetail() {
 
     const method = existing ? "PUT" : "POST";
     const url = existing
-      ? `/api/reviews/${existing.review_id}`
-      : `/api/reviews`;
+      ? `${import.meta.env.VITE_API_URL}/api/reviews/${existing.review_id}`
+      : `${import.meta.env.VITE_API_URL}/api/reviews`;
 
     try {
       const res = await fetch(url, {
@@ -111,7 +111,7 @@ export default function RestaurantDetail() {
       if (res.ok) {
         alert(existing ? "✅ 評論已更新" : "✅ 已新增評論");
         setNewComment("");
-        const newRes = await fetch(`/api/reviews/${id}`);
+        const newRes = await fetch(`${import.meta.env.VITE_API_URL}/api/reviews/${id}`);
         setReviews(await newRes.json());
       } else {
         alert(`❌ 操作失敗：${result.error}`);
