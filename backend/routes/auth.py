@@ -16,11 +16,13 @@ auth_bp = Blueprint("auth", __name__)
 # 查詢所有使用者
 @auth_bp.route("/api/users")
 def get_users():
+    print("🔍 查詢所有使用者")
     return jsonify(query_all("SELECT * FROM User"))
 
 # 註冊使用者
 @auth_bp.route("/api/register", methods=["POST"])
 def register():
+    print("🔍 註冊新使用者")
     data = request.json
     username = data.get("username")
     password = data.get("password")
@@ -94,6 +96,7 @@ def register():
 # 登入驗證
 @auth_bp.route("/api/login", methods=["POST"])
 def login():
+    print("🔍 使用者登入")
     data = request.json
     username = data.get("username")
     password = data.get("password")
@@ -111,6 +114,7 @@ def login():
 # 修改使用者資料
 @auth_bp.route("/api/users/<int:user_id>", methods=["PUT"])
 def update_user(user_id):
+    print(f"🔍 更新使用者資料: {user_id}")
     data = request.json
     username = data.get("username")
     password = data.get("password")
@@ -135,6 +139,7 @@ def update_user(user_id):
 # 刪除使用者
 @auth_bp.route("/api/users/<int:user_id>", methods=["DELETE"])
 def delete_user(user_id):
+    print(f"🔍 刪除使用者: {user_id}")
     conn = get_db_connection()
     cursor = conn.cursor()
     try:

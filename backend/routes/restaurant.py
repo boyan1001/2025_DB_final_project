@@ -6,6 +6,7 @@ restaurant_bp = Blueprint("restaurant", __name__, url_prefix="/api/restaurants")
 
 # ✅ 產生類似 Google Place ID 的亂碼 restaurant_id
 def generate_unique_restaurant_id():
+    print("🔍 產生唯一的 restaurant_id")
     while True:
         rand = os.urandom(9)
         candidate = "ChIJ" + base64.urlsafe_b64encode(rand).decode("utf-8").rstrip("=")
@@ -17,6 +18,7 @@ def generate_unique_restaurant_id():
 # 📌 新增店家
 @restaurant_bp.route("", methods=["POST"])
 def create_restaurant():
+    print("🔍 新增店家")
     data = request.get_json()
     restaurant_id = generate_unique_restaurant_id()
 
@@ -48,6 +50,7 @@ def create_restaurant():
 # ✏️ 編輯店家
 @restaurant_bp.route("/<restaurant_id>", methods=["PUT"])
 def update_restaurant(restaurant_id):
+    print(f"🔍 更新店家 {restaurant_id}")
     data = request.get_json()
     sql = """
         UPDATE Restaurant SET
@@ -76,6 +79,7 @@ def update_restaurant(restaurant_id):
 # restaurant.py 中的 get_restaurants()
 @restaurant_bp.route("", methods=["GET"])
 def get_restaurants():
+    print("🔍 查詢店家")
     conditions = []
     values = []
 
@@ -109,6 +113,7 @@ def get_restaurants():
 # 🔍 查詢單一店家
 @restaurant_bp.route("/<restaurant_id>", methods=["GET"])
 def get_restaurant(restaurant_id):
+    print(f"🔍 查詢店家 {restaurant_id}")
     sql = "SELECT * FROM Restaurant WHERE restaurant_id = %s"
     result = query_all(sql, (restaurant_id,))
     if not result:
@@ -118,6 +123,7 @@ def get_restaurant(restaurant_id):
 # ❌ 刪除店家
 @restaurant_bp.route("/<restaurant_id>", methods=["DELETE"])
 def delete_restaurant(restaurant_id):
+    print(f"🔍 刪除店家 {restaurant_id}")
     conn = get_db_connection()
     cursor = conn.cursor()
     try:

@@ -5,16 +5,19 @@ image_bp = Blueprint('image', __name__)
 
 @image_bp.route('/api/images', methods=['GET'])
 def get_all_images():
+    print("🔍 查詢所有圖片")
     sql = "SELECT * FROM Image"
     return jsonify(query_all(sql))
 
 @image_bp.route('/api/images/<restaurant_id>', methods=['GET'])
 def get_images_by_restaurant(restaurant_id):
+    print(f"🔍 查詢餐廳 {restaurant_id} 的所有圖片")
     sql = "SELECT * FROM Image WHERE restaurant_id = %s"
     return jsonify(query_all(sql, (restaurant_id,)))
 
 @image_bp.route('/api/images/delete', methods=['DELETE'])
 def delete_image():
+    print("🔍 刪除圖片")
     data = request.get_json()
     restaurant_id = data.get("restaurant_id")
     image_url = data.get("image_url")
@@ -28,6 +31,7 @@ def delete_image():
 
 @image_bp.route('/api/images', methods=['POST'])
 def add_image():
+    print("🔍 新增圖片")
     data = request.get_json()
     restaurant_id = data.get("restaurant_id")
     image_url = data.get("image_url")

@@ -6,6 +6,7 @@ favorite_bp = Blueprint("favorite", __name__, url_prefix="/api/favorites")
 # 查詢某使用者的收藏清單
 @favorite_bp.route("/<int:user_id>", methods=["GET"])
 def get_favorites(user_id):
+    print(f"🔍 查詢使用者 {user_id} 的收藏清單")
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
     cursor.execute("""
@@ -21,6 +22,7 @@ def get_favorites(user_id):
 # 加入收藏
 @favorite_bp.route("", methods=["POST"])
 def add_favorite():
+    print("🔍 新增收藏")
     data = request.get_json()
     user_id = data.get("user_id")
     restaurant_id = data.get("restaurant_id")
@@ -48,6 +50,7 @@ def add_favorite():
 # 移除收藏
 @favorite_bp.route("", methods=["DELETE"])
 def remove_favorite():
+    print("🔍 移除收藏")
     data = request.get_json()
     user_id = data.get("user_id")
     restaurant_id = data.get("restaurant_id")
