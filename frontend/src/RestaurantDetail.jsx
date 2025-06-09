@@ -184,7 +184,7 @@ export default function RestaurantDetail() {
         <div style={{ textAlign: "left", maxWidth: "600px", margin: "0 auto" }}>
           {reviews.map((review, index) => (
             <div key={index} style={{ marginBottom: "1.5rem", borderBottom: "1px solid #ccc", paddingBottom: "1rem" }}>
-              <p><strong>{review.username}</strong>（{review.review_date}）</p>
+              <p><strong>{review.username}</strong>（{new Date(review.review_date).toLocaleDateString("zh-TW", { year: "numeric", month: "2-digit", day: "2-digit" })}）</p>
               <p>評分：⭐ {review.rating}</p>
               <p>{review.comment.split("\n").map((line, i) => (
                 <span key={i}>{line}<br /></span>
