@@ -9,7 +9,7 @@ export default function LoginPage({ setUser, setRole }) {
     const password = e.target.elements.password.value;
 
     try {
-      const res = await fetch("/api/login", {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

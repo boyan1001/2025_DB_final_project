@@ -58,7 +58,7 @@ export default function RestaurantSearch() {
       if (station) params.append("station", station);
 
       try {
-        const res = await fetch(`/api/restaurants?${params.toString()}`);
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/restaurants?${params.toString()}`);
         const json = await res.json();
         console.log("取得的資料", json);
         setRestaurants(json);
@@ -76,7 +76,7 @@ export default function RestaurantSearch() {
     async function fetchFavorites() {
       if (!userId) return;
       try {
-        const res = await fetch(`/api/favorites/${userId}`);
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/favorites/${userId}`);
         if (!res.ok) throw new Error("無法取得收藏清單");
         const data = await res.json();
         setFavorites(data.map(r => r.restaurant_id)); // 只保留 ID
@@ -91,7 +91,7 @@ export default function RestaurantSearch() {
   async function handleToggleFavorite(userId, restaurantId) {
     const isFav = favorites.includes(restaurantId);
     try {
-      const res = await fetch("/api/favorites", {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/favorites`, {
         method: isFav ? "DELETE" : "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ user_id: Number(userId), restaurant_id: restaurantId }),

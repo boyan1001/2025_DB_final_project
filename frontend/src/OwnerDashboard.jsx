@@ -10,12 +10,12 @@ export default function OwnerDashboard() {
 
   useEffect(() => {
     async function fetchRestaurants() {
-      const res = await fetch(`/api/restaurants?owner_id=${ownerId}`);
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/restaurants?owner_id=${ownerId}`);
       const data = await res.json();
       // 同步查詢每家餐廳的圖片集
       const enrichedData = await Promise.all(
         data.map(async (r) => {
-          const imgRes = await fetch(`/api/images/${r.restaurant_id}`);
+          const imgRes = await fetch(`${import.meta.env.VITE_API_URL}/api/images/${r.restaurant_id}`);
           const imgs = await imgRes.json();
           return { ...r, images: imgs.map((img) => img.image_url) };
         })
@@ -37,8 +37,8 @@ export default function OwnerDashboard() {
 
     const method = selected.restaurant_id ? "PUT" : "POST";
     const url = selected.restaurant_id
-      ? `/api/restaurants/${selected.restaurant_id}`
-      : `/api/restaurants`;
+      ? `${import.meta.env.VITE_API_URL}/api/restaurants/${selected.restaurant_id}`
+      : `${import.meta.env.VITE_API_URL}/api/restaurants`;
 
     const res = await fetch(url, {
       method,
@@ -53,7 +53,7 @@ export default function OwnerDashboard() {
     alert(result.message || (method === "POST" ? "新增成功" : "更新成功"));
 
     // 重新抓取資料
-    const refreshed = await fetch(`/api/restaurants?owner_id=${ownerId}`);
+    const refreshed = await fetch(`${import.meta.env.VITE_API_URL}/api/restaurants?owner_id=${ownerId}`);
     const updated = await refreshed.json();
     setRestaurants(updated);
     setSelected(null);
@@ -62,7 +62,7 @@ export default function OwnerDashboard() {
   const uploadImage = async () => {
   if (!newImage || !selected?.restaurant_id) return;
 
-    const res = await fetch("/api/images", {
+    const res = await fetch(`${import.meta.env.VITE_API_URL}/api/images`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -87,7 +87,7 @@ export default function OwnerDashboard() {
     const confirmDelete = window.confirm("確定要刪除這張圖片嗎？");
     if (!confirmDelete) return;
 
-    const res = await fetch("/api/images/delete", {
+    const res = await fetch(`${import.meta.env.VITE_API_URL}/api/images/delete`, {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -112,7 +112,7 @@ export default function OwnerDashboard() {
     if (!confirmDelete) return;
 
     try {
-      const res = await fetch(`/api/restaurants/${id}`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/restaurants/${id}`, {
         method: "DELETE",
       });
 
@@ -127,7 +127,7 @@ export default function OwnerDashboard() {
       alert("✅ 餐廳已成功刪除");
 
       // 重新更新餐廳清單
-      const refreshed = await fetch(`/api/restaurants?owner_id=${ownerId}`);
+      const refreshed = await fetch(`${import.meta.env.VITE_API_URL}/api/restaurants?owner_id=${ownerId}`);
       const updated = await refreshed.json();
       setRestaurants(updated);
       setSelected(null);

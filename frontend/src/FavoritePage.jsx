@@ -10,7 +10,7 @@ export default function FavoritesPage() {
   useEffect(() => {
     async function fetchFavorites() {
       try {
-        const res = await fetch(`/api/favorites/${userId}`);
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/favorites/${userId}`);
         if (!res.ok) throw new Error("無法取得收藏清單");
         const data = await res.json();
         setFavorites(data);
@@ -27,7 +27,7 @@ export default function FavoritesPage() {
     const isAlreadyFavorite = favorites.some(r => r.restaurant_id === restaurantId);
 
     try {
-      const res = await fetch(`/api/favorites`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/favorites`, {
         method: isAlreadyFavorite ? "DELETE" : "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ user_id: userId, restaurant_id: restaurantId }),
@@ -36,7 +36,7 @@ export default function FavoritesPage() {
       if (!res.ok) throw new Error(await res.text());
 
       // 重新拉資料
-      const updated = await fetch(`/api/favorites/${userId}`).then(r => r.json());
+      const updated = await fetch(`${import.meta.env.VITE_API_URL}/api/favorites/${userId}`).then(r => r.json());
       setFavorites(updated);
     } catch (err) {
       alert("❌ 操作失敗：" + err.message);
