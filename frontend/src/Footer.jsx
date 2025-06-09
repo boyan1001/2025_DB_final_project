@@ -7,13 +7,13 @@ export default function Footer() {
       <div className="footer-content">
         <div className="about">
           <h3>關於我們 🍽</h3>
-          <p>我們致力於提供一個簡單、快速又實用的美食搜尋平台，幫助您輕鬆找到附近的熱門餐廳。</p>
+          <p>我們致力於在4天內以及隊友會突然睡著的情況下，提供一個簡單、快速又實用的美食搜尋平台，幫助您輕鬆找到附近的熱門餐廳。</p>
           <p>不論是約會、家庭聚餐還是朋友聚會，只要輸入關鍵字，就能找到適合的好店。</p>
         </div>
 
         <div className="social">
           <h3>聯絡與連結</h3>
-          <p>歡迎一起分享你的美食日常！</p>
+          <p>請給我們高分謝謝!</p>
           <p>電子信箱 : 41247018S@gapps.ntnu.edu.tw</p>
           <p>聯絡電話 : (02)7749-1188</p>
         </div>
