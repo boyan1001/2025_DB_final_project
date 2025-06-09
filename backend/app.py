@@ -1,10 +1,10 @@
-# from flask import Flask
+from flask import Flask
 # from routes.auth import auth_bp
 # from routes.restaurant import restaurant_bp
 # from routes.review import review_bp
 # from routes.favorite import favorite_bp
 # from routes.image import image_bp
-# from flask_cors import CORS
+from flask_cors import CORS
 
 app = Flask(__name__)
 CORS(app)
