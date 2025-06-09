@@ -166,7 +166,15 @@ export default function OwnerDashboard() {
       {restaurants.map((r) => (
         <div key={r.restaurant_id} className="restaurant-item">
           <strong>{r.name}</strong>（{r.district}）
-          <button onClick={() => setSelected(r)}>編輯</button>
+          <button onClick={() => {
+            if (selected?.restaurant_id === r.restaurant_id) {
+              setSelected(null); // 若再次點擊相同餐廳，關閉編輯頁
+            } else {
+              setSelected(r); // 否則就進入該餐廳編輯頁
+            }
+          }}>
+            編輯
+          </button>
           <button
             onClick={() => handleDeleteRestaurant(r.restaurant_id)}
             style={{ marginLeft: "0.5rem", color: "red" }}
