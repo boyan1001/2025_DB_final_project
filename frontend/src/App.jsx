@@ -65,10 +65,9 @@ export default function App() {
       <Routes>
         <Route path="/" element={<RestaurantSearch />} />
         <Route path="/restaurant/:id" element={<RestaurantDetail />} />
-        <Route path="/login" element={<LoginPage setUser={setUser} />} />
+        <Route path="/login" element={<LoginPage setUser={setUser} setRole={setRole} />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/favorites" element={<FavoritePage />} />
-        <Route path="/login" element={<LoginPage setUser={setUser} setRole={setRole} />} />
         <Route path="/dashboard" element={<OwnerDashboard />} />
       </Routes>
 
