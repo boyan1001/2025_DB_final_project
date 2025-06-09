@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from utils.db import query_all, execute
+from utils.db import query_all, execute, get_db_connection
 import os, base64
 
 restaurant_bp = Blueprint("restaurant", __name__, url_prefix="/api/restaurants")
@@ -94,7 +94,7 @@ def get_restaurants():
     if cuisine := request.args.get("cuisine"):
         conditions.append("cuisine_type LIKE %s")
         values.append(f"%{cuisine}%")
-    if owner_id := request.args.get("owner_id"):  # ✅ 加這個
+    if owner_id := request.args.get("owner_id"):
         conditions.append("owner_id = %s")
         values.append(owner_id)
 
@@ -114,3 +114,19 @@ def get_restaurant(restaurant_id):
     if not result:
         return jsonify({"message": "找不到該店家"}), 404
     return jsonify(result[0])
+
+# ❌ 刪除店家
+@restaurant_bp.route("/<restaurant_id>", methods=["DELETE"])
+def delete_restaurant(restaurant_id):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    try:
+        cursor.execute("DELETE FROM Restaurant WHERE restaurant_id = %s", (restaurant_id,))
+        conn.commit()
+        return jsonify({"message": "餐廳刪除成功"})
+    except Exception as e:
+        conn.rollback()
+        return jsonify({"error": str(e)}), 500
+    finally:
+        cursor.close()
+        conn.close()
