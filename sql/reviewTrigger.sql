@@ -10,9 +10,9 @@ BEGIN
   FROM reviews
   WHERE restaurant_id = NEW.restaurant_id;
 
-  UPDATE restaurants
+  UPDATE restaurant
   SET rating = IFNULL(new_rating, 0)
-  WHERE id = NEW.restaurant_id;
+  WHERE restaurant_id = NEW.restaurant_id;
 END$$
 
 DELIMITER ;
@@ -30,9 +30,9 @@ BEGIN
   FROM reviews
   WHERE restaurant_id = NEW.restaurant_id;
 
-  UPDATE restaurants
+  UPDATE restaurant
   SET rating = IFNULL(new_rating, 0)
-  WHERE id = NEW.restaurant_id;
+  WHERE restaurant_id = NEW.restaurant_id;
 END$$
 
 DELIMITER ;
@@ -50,9 +50,9 @@ BEGIN
   FROM reviews
   WHERE restaurant_id = OLD.restaurant_id;
 
-  UPDATE restaurants
+  UPDATE restaurant
   SET rating = IFNULL(new_rating, 0)
-  WHERE id = OLD.restaurant_id;
+  WHERE restaurant_id = OLD.restaurant_id;
 END$$
 
 DELIMITER ;
