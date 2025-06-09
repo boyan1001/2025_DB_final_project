@@ -5,7 +5,7 @@ export default defineConfig({
   plugins: [react()],
   server: {
     proxy: {
-      '/api': 'http://localhost:5000', // 這裡代理到 Flask 的伺服器
+      '/api': 'https://two025-db-final-project.onrender.com', // 這裡代理到 Flask 的伺服器
     }
   }
 })
