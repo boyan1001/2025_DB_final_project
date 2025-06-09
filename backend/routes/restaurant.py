@@ -1,12 +1,25 @@
 from flask import Blueprint, request, jsonify
 from utils.db import query_all, execute
+import os, base64
 
 restaurant_bp = Blueprint("restaurant", __name__, url_prefix="/api/restaurants")
+
+# ✅ 產生類似 Google Place ID 的亂碼 restaurant_id
+def generate_unique_restaurant_id():
+    while True:
+        rand = os.urandom(9)
+        candidate = "ChIJ" + base64.urlsafe_b64encode(rand).decode("utf-8").rstrip("=")
+        exists = query_all("SELECT 1 FROM Restaurant WHERE restaurant_id = %s", (candidate,))
+        print("🔍 檢查 restaurant_id 是否存在:", candidate, "=>", exists)
+        if not exists:
+            return candidate
 
 # 📌 新增店家
 @restaurant_bp.route("", methods=["POST"])
 def create_restaurant():
     data = request.get_json()
+    restaurant_id = generate_unique_restaurant_id()
+
     sql = """
         INSERT INTO Restaurant (
             restaurant_id, owner_id, name, address, phone,
@@ -15,21 +28,22 @@ def create_restaurant():
         ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
     """
     params = (
-        data.get("restaurant_id"),
+        restaurant_id,
         data.get("owner_id"),
         data.get("name"),
         data.get("address"),
         data.get("phone"),
         data.get("price_range"),
         data.get("cuisine_type"),
-        data.get("rating"),
+        data.get("rating", 0),
         data.get("cover"),
         data.get("county"),
         data.get("district"),
         data.get("station_name"),
     )
+    print("✅ 新產生的 restaurant_id:", restaurant_id)
     execute(sql, params)
-    return jsonify({"message": "✅ 店家新增成功"}), 201
+    return jsonify({"message": "✅ 店家新增成功", "restaurant_id": restaurant_id}), 201
 
 # ✏️ 編輯店家
 @restaurant_bp.route("/<restaurant_id>", methods=["PUT"])
@@ -59,6 +73,7 @@ def update_restaurant(restaurant_id):
     return jsonify({"message": "✅ 店家資訊已更新"})
 
 # 🔍 查詢店家（支援條件篩選）
+# restaurant.py 中的 get_restaurants()
 @restaurant_bp.route("", methods=["GET"])
 def get_restaurants():
     conditions = []
@@ -79,6 +94,9 @@ def get_restaurants():
     if cuisine := request.args.get("cuisine"):
         conditions.append("cuisine_type LIKE %s")
         values.append(f"%{cuisine}%")
+    if owner_id := request.args.get("owner_id"):  # ✅ 加這個
+        conditions.append("owner_id = %s")
+        values.append(owner_id)
 
     sql = "SELECT * FROM Restaurant"
     if conditions:
@@ -86,6 +104,7 @@ def get_restaurants():
 
     results = query_all(sql, values)
     return jsonify(results)
+
 
 # 🔍 查詢單一店家
 @restaurant_bp.route("/<restaurant_id>", methods=["GET"])

@@ -8,14 +8,22 @@ import "swiper/css/effect-coverflow";
 import nullImage from "./data/null_image.png";
 
 function getPriceRangeString(priceRange) {
-  if (!priceRange || isNaN(priceRange)) return "價格資訊不詳";
-
-  const price = parseInt(priceRange, 10);
-  const lower = Math.floor((price - 1) / 200) * 200 + 1;
-  const upper = lower + 199;
-
-  return `${lower}–${upper}`;
+  switch (priceRange) {
+    case "$":
+      return "$0 - $200";
+    case "$$":
+      return "$201 - $400";
+    case "$$$":
+      return "$401 - $600";
+    case "$$$$":
+      return "$601 - $800";
+    case "$$$$$":
+      return "$801 以上";
+    default:
+      return "價格資訊不詳";
+  }
 }
+
 
 export default function RestaurantDetail() {
   const { id } = useParams();
@@ -25,8 +33,8 @@ export default function RestaurantDetail() {
   const [newRating, setNewRating] = useState(5);
   const [newComment, setNewComment] = useState("");
 
-  const loggedInUser = Number(localStorage.getItem("loggedInUser")); // user_id
-  const loggedInUsername = localStorage.getItem("loggedInUsername");
+  const storedUserId = localStorage.getItem("loggedInUser");
+  const loggedInUser = storedUserId ? Number(storedUserId) : null;
 
   useEffect(() => {
     async function fetchRestaurant() {
