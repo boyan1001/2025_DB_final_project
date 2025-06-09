@@ -486,20 +486,20 @@ body {
 }
 
 .add-button {
-  background-color: #fdd835;         /* 鮮明鵝黃色 */
-  color: #2e2e2e;                    /* 深灰黑文字 */
-  padding: 12px 20px;
+  background-color: #fdd835;         /* 鵝黃色 */
+  color: #2e2e2e;                    /* 深灰文字 */
+  padding: 12px 24px;
   border: none;
-  border-radius: 12px;
+  border-radius: 14px;
   font-size: 1rem;
   font-weight: bold;
   cursor: pointer;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   transition: background-color 0.2s ease, transform 0.1s ease;
 }
 
 .add-button:hover {
-  background-color: #ffeb3b;
+  background-color: #ffeb3b;         /* hover 稍微更亮 */
 }
 
 @media (max-width: 768px) {

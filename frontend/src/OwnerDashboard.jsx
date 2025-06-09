@@ -107,6 +107,36 @@ export default function OwnerDashboard() {
     }
   };
 
+  const handleDeleteRestaurant = async (id) => {
+    const confirmDelete = window.confirm("確定要刪除這間餐廳嗎？此動作無法復原！");
+    if (!confirmDelete) return;
+
+    try {
+      const res = await fetch(`/api/restaurants/${id}`, {
+        method: "DELETE",
+      });
+
+      const result = await res.json();
+
+      if (!res.ok) {
+        console.error("刪除失敗:", result);
+        alert("❌ 刪除失敗：" + (result.error || "未知錯誤"));
+        return;
+      }
+
+      alert("✅ 餐廳已成功刪除");
+
+      // 重新更新餐廳清單
+      const refreshed = await fetch(`/api/restaurants?owner_id=${ownerId}`);
+      const updated = await refreshed.json();
+      setRestaurants(updated);
+      setSelected(null);
+    } catch (err) {
+      console.error("錯誤發生:", err);
+      alert("❌ 無法刪除，請稍後再試");
+    }
+  };
+
   const startNewRestaurant = () => {
     setSelected({
       name: "",
@@ -147,7 +177,6 @@ export default function OwnerDashboard() {
           }}>
             編輯
           </button>
-
           <button
             onClick={() => handleDeleteRestaurant(r.restaurant_id)}
             style={{ marginLeft: "0.5rem", color: "red" }}
@@ -156,20 +185,16 @@ export default function OwnerDashboard() {
           </button>
         </div>
       ))}
-
+      <br/>
       {!selected && restaurants.length > 0 && (
-        <button
-          className="add-button"
-          style={{ marginTop: "1rem" }}
-          onClick={startNewRestaurant}
-        >
+        <button className="add-button" onClick={startNewRestaurant}>
           新增餐廳
         </button>
       )}
 
       {selected && (
         <div className="edit-form">
-          <label>店名</label>
+          <label>名稱</label>
           <input name="name" value={selected.name} onChange={handleEditChange} />
 
           <label>地址</label>
@@ -187,7 +212,7 @@ export default function OwnerDashboard() {
             <option value="5">$801 以上</option>
           </select>
 
-          <label>餐廳類型（可複選）</label>
+          <label>菜系（可複選）</label>
           <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
             {[
               "Chinese 中式",
@@ -275,7 +300,7 @@ export default function OwnerDashboard() {
           </select>
 
 
-          <label>鄰近捷運站</label>
+          <label>捷運站</label>
           <select name="station_name" value={selected.station_name} onChange={handleEditChange}>
               <optgroup label="文湖線">
               <option value="動物園">動物園</option>
