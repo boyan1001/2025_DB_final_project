@@ -485,6 +485,23 @@ body {
   background-color: #f5b938;
 }
 
+.add-button {
+  background-color: #fdd835;         /* 鮮明鵝黃色 */
+  color: #2e2e2e;                    /* 深灰黑文字 */
+  padding: 12px 20px;
+  border: none;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.add-button:hover {
+  background-color: #ffeb3b;
+}
+
 @media (max-width: 768px) {
   .card {
     width: 100%;
