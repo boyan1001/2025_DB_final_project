@@ -4,8 +4,10 @@ from routes.restaurant import restaurant_bp
 from routes.review import review_bp
 from routes.favorite import favorite_bp
 from routes.image import image_bp
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)
 
 app.register_blueprint(auth_bp)
 app.register_blueprint(restaurant_bp)
