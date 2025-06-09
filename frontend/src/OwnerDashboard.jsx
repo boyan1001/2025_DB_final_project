@@ -229,7 +229,9 @@ export default function OwnerDashboard() {
                   value={type}
                   checked={selected.cuisine_type?.split("、").includes(type) || false}
                   onChange={(e) => {
-                    const selectedValues = selected.cuisine_type?.split("、") || [];
+                    const selectedValues = selected.cuisine_type
+                      ? selected.cuisine_type.split("、").filter(Boolean)
+                      : [];
                     const updated = e.target.checked
                       ? [...selectedValues, type]
                       : selectedValues.filter((t) => t !== type);
@@ -249,6 +251,7 @@ export default function OwnerDashboard() {
           <input name="cover" value={selected.cover} onChange={handleEditChange} />
 
           <select name="district" value={selected.district} onChange={handleEditChange}>
+            <option value="">請選擇地區</option>
             <optgroup label="台北市">
               <option value="中正區">中正區</option>
               <option value="大同區">大同區</option>
@@ -302,7 +305,8 @@ export default function OwnerDashboard() {
 
           <label>捷運站</label>
           <select name="station_name" value={selected.station_name} onChange={handleEditChange}>
-              <optgroup label="文湖線">
+            <option value="">請選擇捷運站</option>
+            <optgroup label="文湖線">
               <option value="動物園">動物園</option>
               <option value="木柵">木柵</option>
               <option value="萬芳社區">萬芳社區</option>
