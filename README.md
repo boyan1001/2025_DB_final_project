@@ -13,7 +13,11 @@
 ```sh
 boyan1001 (Hank Chen) : Project manager / Backend
 
-Jerryleess : Frontend 
+linkay1026：Frontend / Backend
+
+Jerryleess : Frontend
+
+ 
 ```
 
 ## 🧱 結構
