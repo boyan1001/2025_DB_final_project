@@ -9,11 +9,11 @@ from flask_cors import CORS
 app = Flask(__name__)
 CORS(app)
 
-app.register_blueprint(auth_bp, url_prefix="/api")
-app.register_blueprint(restaurant_bp, url_prefix="/api")
-app.register_blueprint(review_bp, url_prefix="/api")
-app.register_blueprint(favorite_bp, url_prefix="/api")
-app.register_blueprint(image_bp, url_prefix="/api")
+app.register_blueprint(auth_bp)
+app.register_blueprint(restaurant_bp)
+app.register_blueprint(review_bp)
+app.register_blueprint(favorite_bp)
+app.register_blueprint(image_bp)
 
 @app.route("/")
 def hello():
